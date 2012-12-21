@@ -13,7 +13,7 @@ use asset\assets\FileAsset;
 use asset\AssetManager;
 use asset\filters\CssMinifyFilter;
 
-use snb\core\ConfigSettings;
+use snb\config\ConfigSettings;
 use snb\core\KernelInterface;
 
 
@@ -29,7 +29,7 @@ class AssetExtension extends \Twig_Extension
 
 
     /**
-     * @param \snb\core\ConfigSettings $config
+     * @param \snb\config\ConfigSettings $config
      * @param \snb\core\KernelInterface $kernel
      * @throw \InvalidArgumentException
      */
