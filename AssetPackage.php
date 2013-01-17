@@ -20,6 +20,6 @@ class AssetPackage extends ContainerAware implements PackageInterface
 	{
 		// Should be in Buzz, but its simpler to leave that package completely unmodified...
 		$kernel->addService('twig.extension.asset', '\asset\extensions\twig\AssetExtension')
-			->setArguments(array('::service::config', '::service::kernel'));
+			->setArguments(array('::service::config', '::service::kernel', '::service::cache'));
 	}
 }

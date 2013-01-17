@@ -15,6 +15,7 @@ use asset\filters\CssMinifyFilter;
 
 use snb\config\ConfigSettings;
 use snb\core\KernelInterface;
+use snb\cache\CacheInterface;
 
 
 /**
@@ -23,21 +24,39 @@ use snb\core\KernelInterface;
  */
 class AssetExtension extends \Twig_Extension
 {
-    protected $kernel;
+	/**
+	 * @var \snb\config\ConfigSettings
+	 */
+	protected $config;
+
+	/**
+	 * @var \snb\core\KernelInterface
+	 */
+	protected $kernel;
+
+	/**
+	 * @var \snb\cache\CacheInterface
+	 */
+	protected $cache;
+
+
     protected $baseUrl;
     protected $writeTo;
+	protected $cacheTime;
 
 
     /**
      * @param \snb\config\ConfigSettings $config
      * @param \snb\core\KernelInterface $kernel
-     * @throw \InvalidArgumentException
+	 * @param \snb\cache\CacheInterface $cache
+	 * @throw \InvalidArgumentException
      */
-	public function __construct(ConfigSettings $config, KernelInterface $kernel)
+	public function __construct(ConfigSettings $config, KernelInterface $kernel, CacheInterface $cache)
     {
         // Get some settings from the config
         $this->baseUrl = $config->get('assets.base_url', '');
         $this->writeTo = $kernel->findPath($config->get('assets.write_to', ''));
+		$this->cacheTime = $config->get('assets.cachetime', 6000);
 
         // check we have a valid path
         if (empty($this->writeTo)) {
@@ -46,6 +65,8 @@ class AssetExtension extends \Twig_Extension
 
         // we'll need the kernel later
         $this->kernel = $kernel;
+		$this->config = $config;
+		$this->cache = $cache;
     }
 
 
@@ -66,8 +87,9 @@ class AssetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'asset_path_css'  => new \Twig_Function_Method($this, 'handleCssAssets'),
-            'asset_path_js'  => new \Twig_Function_Method($this, 'handleJsAssets')
+            'asset_path_css' => new \Twig_Function_Method($this, 'handleCssAssets'),
+            'asset_path_js'  => new \Twig_Function_Method($this, 'handleJsAssets'),
+			'asset'			 => new \Twig_Function_Method($this, 'handleAssets')
         );
     }
 
@@ -91,6 +113,53 @@ class AssetExtension extends \Twig_Extension
     {
         return $this->handleGeneralAssets($fileList, $target, array());
     }
+
+
+	/**
+	 * Looks up the asset group name in your config and takes
+	 * all the files and settings from there
+	 * @param $name - the name of the asset set to load (a-z 0-9 _ and - only)
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	public function handleAssets($name)
+	{
+		// clean the name
+		$name = preg_replace('/[^a-z0-9-_]/u', '', strtolower($name));
+
+		// Get the name of the config key
+		$key = 'assets.filesets.'.$name;
+
+		// look the asset name up in the cache
+		$url = $this->cache->get($key);
+		if ($url != null)
+			return $url;
+
+		// Check the file list is decent.
+		$fileList = $this->config->get($key.'.files.*', array());
+		if (!is_array($fileList) || count($fileList) == 0) {
+			throw new \InvalidArgumentException("Asset File list for $name is missing or empty. Can't generate asset files");
+		}
+
+		// check that the type is one of the ones we support
+		$type = $this->config->get($key.'.type', 'css');
+		if (!preg_match('/css|js/u', $type)) {
+			throw new \InvalidArgumentException("Asset File list for $name uses invalid type of $type");
+		}
+
+		// built the filter list...
+		$filters = array();
+		if ($type == 'css')
+			$filters = array(new CssMinifyFilter());
+
+		// Build the target name
+		$target = $name.'-%token%.'.$type;
+
+		// Finally, generate the content, write it to the cache, and return it
+		$url = $this->handleGeneralAssets($fileList, $target, $filters);
+		$this->cache->set($key, $url, $this->cacheTime);
+		return $url;
+	}
 
 
     /**

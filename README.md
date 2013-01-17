@@ -51,9 +51,47 @@ assets:
 - write_to is a standard system path name (<packagename:path>)
 - base_url is a URL that all asset paths will have prepended to them
 
-Finally, you can add calls to the 2 asset functions in your Twig templates...
+
+Simple usage
+============
+
+You can add calls to the 2 basic asset functions in your Twig templates. For
+css files, use asset_path_css, and for javascript files use asset_path_js, like so...
 
 	<link href="{{ asset_path_css(
 		['package:folder:file.css', 'package:folder:another.css'],
 		'styles-%token%.css')
 	}}" rel="stylesheet" type="text/css"/>
+
+The first argument is an array of files to be found in the resource folder of one of your
+packages, the second is the name of the output file / url to generate. %token% will be
+replaced with a unique id that will change whenever any of the source files are changed.
+
+Advanced Usage
+==============
+
+The latest version of the asset manager now includes a way of pushing almost all the information
+about the asset list to your config file, making it much simpler to use in your templates. Lets
+start with the example template code...
+
+	<link href="{{ asset('home') }}" rel="stylesheet" type="text/css"/>
+
+The asset manager then looks up various bits of information from the config. Below is an
+example config file that defines the 'home' asset set used above.
+
+assets:
+  write_to: :/../htdocs/css/
+  base_url: /css/
+  cachetime: 6000
+  filesets:
+    home:
+      type: css
+      files:
+        - example:css:reset.css
+        - example:css:grid.css
+        - example:css:home.css
+
+The 'type' value defaults to css, but can be css or js.
+
+You'll also notice a 'cachetime' setting, which is used by the asset() twig function to cache
+the resulting URL for the number of seconds specified. This is recommended on your production config
