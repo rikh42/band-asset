@@ -22,6 +22,7 @@ class CssMinifyFilter implements FilterInterface
 {
 
     /**
+	 * Gets the name of the filter (used as part of the token generation)
      * @return string
      */
     public function getName()
@@ -33,6 +34,7 @@ class CssMinifyFilter implements FilterInterface
 
 
     /**
+	 * A basic minify function that strips out unwanted space and simplifies the css
      * @param $content
      * @return mixed
      */

@@ -7,7 +7,6 @@
      */
 
 namespace asset\assets;
-use asset\filters\FilterInterface;
 use asset\assets\BaseAsset;
 
 

@@ -8,7 +8,6 @@
 
 namespace asset;
 use asset\assets\AssetInterface;
-use asset\assets\BaseAsset;
 
 
 /**

@@ -33,7 +33,7 @@ class AssetExtension extends \Twig_Extension
      * @param \snb\core\KernelInterface $kernel
      * @throw \InvalidArgumentException
      */
-    public function __construct(ConfigSettings $config, KernelInterface $kernel)
+	public function __construct(ConfigSettings $config, KernelInterface $kernel)
     {
         // Get some settings from the config
         $this->baseUrl = $config->get('assets.base_url', '');
@@ -41,7 +41,7 @@ class AssetExtension extends \Twig_Extension
 
         // check we have a valid path
         if (empty($this->writeTo)) {
-            throw new \InvalidArgumentException("write_to path has not been set in the Asset Extension");
+            throw new \InvalidArgumentException("write_to path has not been set in the Asset Extension. Did you set assets.write_to in your config.yml");
         }
 
         // we'll need the kernel later
