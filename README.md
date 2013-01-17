@@ -23,30 +23,36 @@ following changes...
 1. Add an item to the getBootable() method in AppKernel.php to register the asset
 package, list so...
 
-	protected function getBootable()
-	{
-        return array(
-			new \asset\AssetPackage(),
-			// You other packages will be here...
-		);
-	}
+```php
+protected function getBootable()
+{
+	return array(
+		new \asset\AssetPackage(),
+		// You other packages will be here...
+	);
+}
+```
 
 This will register the Twig extensions with the service container, so that Twig
 will automatically find the extension and enable it.
 
 2. Add a line to the autoload.php to register the asset namespace, like so...
 
-	AutoLoadContainer::addNamespaces(array(
-		'asset' => __DIR__.'/path/to/asset/package',
-		// Your other namespaces defined here...
-	));
+```php
+AutoLoadContainer::addNamespaces(array(
+	'asset' => __DIR__.'/path/to/asset/package',
+	// Your other namespaces defined here...
+));
+```
 
 3. Add some info to your config file to tell the asset manager where to write
 it's cached files. Here is an example config
 
+```yaml
 assets:
   write_to: :/../htdocs/css/
   base_url: http://example.com
+```
 
 - write_to is a standard system path name (<packagename:path>)
 - base_url is a URL that all asset paths will have prepended to them
@@ -58,10 +64,12 @@ Simple usage
 You can add calls to the 2 basic asset functions in your Twig templates. For
 css files, use asset_path_css, and for javascript files use asset_path_js, like so...
 
+```html
 	<link href="{{ asset_path_css(
 		['package:folder:file.css', 'package:folder:another.css'],
 		'styles-%token%.css')
 	}}" rel="stylesheet" type="text/css"/>
+```
 
 The first argument is an array of files to be found in the resource folder of one of your
 packages, the second is the name of the output file / url to generate. %token% will be
@@ -74,11 +82,14 @@ The latest version of the asset manager now includes a way of pushing almost all
 about the asset list to your config file, making it much simpler to use in your templates. Lets
 start with the example template code...
 
+```html
 	<link href="{{ asset('home') }}" rel="stylesheet" type="text/css"/>
+```
 
 The asset manager then looks up various bits of information from the config. Below is an
 example config file that defines the 'home' asset set used above.
 
+```yaml
 assets:
   write_to: :/../htdocs/css/
   base_url: /css/
@@ -90,6 +101,7 @@ assets:
         - example:css:reset.css
         - example:css:grid.css
         - example:css:home.css
+```
 
 The 'type' value defaults to css, but can be css or js.
 
