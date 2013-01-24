@@ -100,7 +100,7 @@ class AssetCollection extends BaseAsset
         foreach ($this->assets as $asset) {
             // Add the last modified data to the token key
             $content .= $asset->getContent();
-            $content .= "\n";
+            $content .= "\n\n";
         }
 
         // apply the filters and return it

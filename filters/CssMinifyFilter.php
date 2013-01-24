@@ -29,7 +29,7 @@ class CssMinifyFilter implements FilterInterface
     {
         // If you change the filter, change this to have
         // all files using it be regenerated.
-        return 'Css Minify Filter v1.0.2';
+        return 'Css Minify Filter v1.0.4';
     }
 
 
