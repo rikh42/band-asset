@@ -138,13 +138,13 @@ class AssetExtension extends \Twig_Extension
 		// Check the file list is decent.
 		$fileList = $this->config->get($key.'.files.*', array());
 		if (!is_array($fileList) || count($fileList) == 0) {
-			throw new \InvalidArgumentException("Asset File list for $name is missing or empty. Can't generate asset files");
+			throw new \InvalidArgumentException("Asset File list for '$name' is missing or empty. Can't generate asset files");
 		}
 
 		// check that the type is one of the ones we support
 		$type = $this->config->get($key.'.type', 'css');
 		if (!preg_match('/css|js/u', $type)) {
-			throw new \InvalidArgumentException("Asset File list for $name uses invalid type of $type");
+			throw new \InvalidArgumentException("Asset File list for '$name'' uses invalid type of '$type''");
 		}
 
 		// built the filter list...
