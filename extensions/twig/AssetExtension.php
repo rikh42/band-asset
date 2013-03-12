@@ -131,9 +131,9 @@ class AssetExtension extends \Twig_Extension
 		$key = 'assets.filesets.'.$name;
 
 		// look the asset name up in the cache
-		$url = $this->cache->get($key);
-		if ($url != null)
-			return $url;
+		//$url = $this->cache->get($key);
+		//if ($url != null)
+		//	return $url;
 
 		// Check the file list is decent.
 		$fileList = $this->config->get($key.'.files.*', array());
